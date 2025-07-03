@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>地價改算表</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 24px;
+      background: #f5f5f5;
+    }
+    h2 {
+      margin-top: 32px;
+      color: #333;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 8px;
+      background: #fff;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 6px 8px;
+      text-align: center;
+    }
+    th {
+      background: #e0e0e0;
+    }
+    input[type="number"],
+    input[type="text"] {
+      width: 90%;
+      padding: 4px;
+      box-sizing: border-box;
+    }
+    .btn {
+      padding: 6px 12px;
+      margin: 4px;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .btn-add   { background: #4CAF50; }
+    .btn-calc  { background: #2196F3; }
+    .btn-del   { background: #F44336; }
+    #calcTaxBtn { background: #FF9800; }
+    .summary {
+      margin-top: 12px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    hr {
+      margin: 32px 0;
+      border: none;
+      border-top: 2px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>分割前</h2>
+  <table id="preTable">
+    <thead>
+      <tr>
+        <th>地號</th>
+        <th>土地面積</th>
+        <th>所有權人</th>
+        <th>分子</th>
+        <th>分母</th>
+        <th>現值</th>
+        <th>小計</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><input type="text"  class="land-id" /></td>
+        <td><input type="number" class="area"      min="0" /></td>
+        <td><input type="text"  class="owner"    /></td>
+        <td><input type="number" class="numerator" min="1"/></td>
+        <td><input type="number" class="denominator" min="1"/></td>
+        <td><input type="number" class="value"    min="0" /></td>
+        <td class="subtotal">—</td>
+        <td><button class="btn btn-del">刪除</button></td>
+      </tr>
+    </tbody>
+  </table>
+  <button id="addPreBtn" class="btn btn-add">＋ 新增（分割前）</button>
+
+  <h2>分割後</h2>
+  <table id="postTable">
+    <thead>
+      <tr>
+        <th>地號</th>
+        <th>土地面積</th>
+        <th>所有權人</th>
+        <th>分子</th>
+        <th>分母</th>
+        <th>現值</th>
+        <th>小計</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><input type="text"  class="land-id" /></td>
+        <td><input type="number" class="area"      min="0" /></td>
+        <td><input type="text"  class="owner"    /></td>
+        <td><input type="number" class="numerator" min="1"/></td>
+        <td><input type="number" class="denominator" min="1"/></td>
+        <td><input type="number" class="value"    min="0" /></td>
+        <td class="subtotal">—</td>
+        <td><button class="btn btn-del">刪除</button></td>
+      </tr>
+    </tbody>
+  </table>
+  <button id="addPostBtn" class="btn btn-add">＋ 新增（分割後）</button>
+
+  <hr>
+
+  <button id="calcTaxBtn" class="btn btn-calc">計算地稅</button>
+  <div id="preTotal"  class="summary">分割前總計：—</div>
+  <div id="postTotal" class="summary">分割後總計：—</div>
+  <div id="taxDue"    class="summary">應繳地稅：—</div>
+
+  <script>
+    const preTbody   = document.querySelector('#preTable tbody');
+    const postTbody  = document.querySelector('#postTable tbody');
+    const addPreBtn  = document.getElementById('addPreBtn');
+    const addPostBtn = document.getElementById('addPostBtn');
+    const calcTaxBtn = document.getElementById('calcTaxBtn');
+    const preTotalEl = document.getElementById('preTotal');
+    const postTotalEl= document.getElementById('postTotal');
+    const taxDueEl   = document.getElementById('taxDue');
+
+    function createRowHTML(){
+      return `
+      <tr>
+        <td><input type="text"  class="land-id" /></td>
+        <td><input type="number" class="area"      min="0" /></td>
+        <td><input type="text"  class="owner"    /></td>
+        <td><input type="number" class="numerator" min="1"/></td>
+        <td><input type="number" class="denominator" min="1"/></td>
+        <td><input type="number" class="value"    min="0" /></td>
+        <td class="subtotal">—</td>
+        <td><button class="btn btn-del">刪除</button></td>
+      </tr>`;
+    }
+
+    addPreBtn.addEventListener('click', () =>
+      preTbody.insertAdjacentHTML('beforeend', createRowHTML())
+    );
+    addPostBtn.addEventListener('click', () =>
+      postTbody.insertAdjacentHTML('beforeend', createRowHTML())
+    );
+
+    [preTbody, postTbody].forEach(tbody => {
+      tbody.addEventListener('click', e => {
+        if (e.target.matches('.btn-del'))
+          e.target.closest('tr').remove();
+      });
+    });
+
+    function calculateTable(tbody){
+      let sum = 0;
+      tbody.querySelectorAll('tr').forEach(row => {
+        const a = parseFloat(row.querySelector('.area').value);
+        const n = parseFloat(row.querySelector('.numerator').value);
+        const d = parseFloat(row.querySelector('.denominator').value);
+        const v = parseFloat(row.querySelector('.value').value);
+        let sub = '—';
+        if (!isNaN(a) && !isNaN(n) && d > 0 && !isNaN(v)) {
+          const val = a * n / d * v;
+          sum += val;
+          sub = val.toFixed(2);
+        }
+        row.querySelector('.subtotal').textContent = sub;
+      });
+      return sum;
+    }
+
+    calcTaxBtn.addEventListener('click', () => {
+      const preSum  = calculateTable(preTbody);
+      const postSum = calculateTable(postTbody);
+
+      preTotalEl.textContent   = '分割前總計：' + preSum.toFixed(2);
+      postTotalEl.textContent  = '分割後總計：' + postSum.toFixed(2);
+
+      const tax = postSum - preSum;
+      taxDueEl.textContent = '應繳地稅：' +
+        (tax > 0 
+          ? tax.toFixed(2) 
+          : '0（免繳）'
+        );
+    });
+  </script>
+</body>
+</html>
