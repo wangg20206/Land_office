@@ -2,21 +2,32 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <title>地價改算表</title>
+  <title>分割前後土地地稅計算</title>
+  <!-- SheetJS 用來讀寫 Excel -->
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 24px;
       background: #f5f5f5;
     }
+    h1{
+      text-align: center;
+    }
     h2 {
       margin-top: 32px;
       color: #333;
+    
+    }
+    h3{
+      margin-top: 32px;
+      color: #e20505;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 8px;
+      margin-bottom: 16px;
       background: #fff;
     }
     th, td {
@@ -41,46 +52,44 @@
       cursor: pointer;
       border-radius: 4px;
     }
-    .btn-add   { background: #4CAF50; }
-    .btn-calc  { background: #2196F3; }
-    .btn-del   { background: #F44336; }
-    #calcTaxBtn { background: #FF9800; }
-    .summary {
-      margin-top: 12px;
-      font-size: 16px;
-      font-weight: bold;
-    }
-    hr {
-      margin: 32px 0;
-      border: none;
-      border-top: 2px solid #ddd;
-    }
+    .btn-add   { background: #4caf50; }
+    .btn-calc  { background: #2196f3; }
+    .btn-del   { background: #f44336; }
+    #calcTaxBtn { background: #ff9800; }
   </style>
 </head>
 <body>
+  <h1>共有物分割前後差額計算</h1>
+  <h3>請確認輸入資料與共有物分割協議書相符</h3>
+  <h3>本表計算結果僅供參考</h3>
+  <h3>如要使用匯入檔案，請使用本網頁提供之計算表格</h3>
+  <!-- 放在匯入檔案 input 之前 -->
+<a href="./共有物分割前後差額計算表格.xlsx"
+   download="分割前後土地分割範例.xlsx"
+   class="btn btn-add">
+  📥 下載 Excel 範例
+</a>
+<input type="file" id="importExcel" accept=".xlsx,.xls" />
+
+
 
   <h2>分割前</h2>
   <table id="preTable">
     <thead>
       <tr>
-        <th>地號</th>
-        <th>土地面積</th>
-        <th>所有權人</th>
-        <th>分子</th>
-        <th>分母</th>
-        <th>現值</th>
-        <th>小計</th>
-        <th>操作</th>
+        <th>地號</th><th>面積</th><th>所有權人</th>
+        <th>分子</th><th>分母</th><th>現值</th>
+        <th>小計</th><th>操作</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><input type="text"  class="land-id" /></td>
-        <td><input type="number" class="area"      min="0" /></td>
-        <td><input type="text"  class="owner"    /></td>
-        <td><input type="number" class="numerator" min="1"/></td>
-        <td><input type="number" class="denominator" min="1"/></td>
-        <td><input type="number" class="value"    min="0" /></td>
+        <td><input class="land-id" type="text" /></td>
+        <td><input class="area" type="number" min="0" /></td>
+        <td><input class="owner" type="text" /></td>
+        <td><input class="numerator" type="number" min="1" /></td>
+        <td><input class="denominator" type="number" min="1" /></td>
+        <td><input class="value" type="number" min="0" /></td>
         <td class="subtotal">—</td>
         <td><button class="btn btn-del">刪除</button></td>
       </tr>
@@ -92,57 +101,62 @@
   <table id="postTable">
     <thead>
       <tr>
-        <th>地號</th>
-        <th>土地面積</th>
-        <th>所有權人</th>
-        <th>分子</th>
-        <th>分母</th>
-        <th>現值</th>
-        <th>小計</th>
-        <th>操作</th>
+        <th>地號</th><th>面積</th><th>所有權人</th>
+        <th>分子</th><th>分母</th><th>現值</th>
+        <th>小計</th><th>操作</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><input type="text"  class="land-id" /></td>
-        <td><input type="number" class="area"      min="0" /></td>
-        <td><input type="text"  class="owner"    /></td>
-        <td><input type="number" class="numerator" min="1"/></td>
-        <td><input type="number" class="denominator" min="1"/></td>
-        <td><input type="number" class="value"    min="0" /></td>
+        <td><input class="land-id" type="text" /></td>
+        <td><input class="area" type="number" min="0" /></td>
+        <td><input class="owner" type="text" /></td>
+        <td><input class="numerator" type="number" min="1" /></td>
+        <td><input class="denominator" type="number" min="1" /></td>
+        <td><input class="value" type="number" min="0" /></td>
         <td class="subtotal">—</td>
         <td><button class="btn btn-del">刪除</button></td>
       </tr>
     </tbody>
   </table>
-  <button id="addPostBtn" class="btn btn-add">＋ 新增（分割後）</button>
+  <button id="addPostBtn" class="btn btn-add">＋ 新增（分割後）</button><br>
+  <br>
+  <button id="calcTaxBtn" class="btn btn-calc">計算</button><!-- 放在計算按鈕上下 -->
 
-  <hr>
+  <button id="exportExcel" class="btn btn-calc">匯出結果 Excel</button>
 
-  <button id="calcTaxBtn" class="btn btn-calc">計算地稅</button>
-  <div id="preTotal"  class="summary">分割前總計：—</div>
-  <div id="postTotal" class="summary">分割後總計：—</div>
-  <div id="taxDue"    class="summary">應繳地稅：—</div>
+
+
+  <table id="resultTable">
+    <thead>
+      <tr>
+        <th>所有權人</th>
+        <th>分割前總計</th>
+        <th>分割後總計</th>
+        <th>差額</th>
+        <th>是否超過1平方公尺</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
   <script>
-    const preTbody   = document.querySelector('#preTable tbody');
-    const postTbody  = document.querySelector('#postTable tbody');
-    const addPreBtn  = document.getElementById('addPreBtn');
-    const addPostBtn = document.getElementById('addPostBtn');
-    const calcTaxBtn = document.getElementById('calcTaxBtn');
-    const preTotalEl = document.getElementById('preTotal');
-    const postTotalEl= document.getElementById('postTotal');
-    const taxDueEl   = document.getElementById('taxDue');
+    const preTbody    = document.querySelector('#preTable tbody');
+    const postTbody   = document.querySelector('#postTable tbody');
+    const addPreBtn   = document.getElementById('addPreBtn');
+    const addPostBtn  = document.getElementById('addPostBtn');
+    const calcTaxBtn  = document.getElementById('calcTaxBtn');
+    const resultTbody = document.querySelector('#resultTable tbody');
 
-    function createRowHTML(){
+    function createRowHTML() {
       return `
       <tr>
-        <td><input type="text"  class="land-id" /></td>
-        <td><input type="number" class="area"      min="0" /></td>
-        <td><input type="text"  class="owner"    /></td>
-        <td><input type="number" class="numerator" min="1"/></td>
-        <td><input type="number" class="denominator" min="1"/></td>
-        <td><input type="number" class="value"    min="0" /></td>
+        <td><input class="land-id" type="text" /></td>
+        <td><input class="area" type="number" min="0" /></td>
+        <td><input class="owner" type="text" /></td>
+        <td><input class="numerator" type="number" min="1" /></td>
+        <td><input class="denominator" type="number" min="1" /></td>
+        <td><input class="value" type="number" min="0" /></td>
         <td class="subtotal">—</td>
         <td><button class="btn btn-del">刪除</button></td>
       </tr>`;
@@ -162,38 +176,142 @@
       });
     });
 
-    function calculateTable(tbody){
-      let sum = 0;
+
+    document.getElementById('importExcel').addEventListener('change', handleFile, false);
+
+function handleFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    const data = new Uint8Array(evt.target.result);
+    const wb   = XLSX.read(data, { type: 'array' });
+    const ws   = wb.Sheets[wb.SheetNames[0]];
+    // 讀成二維陣列，defval:'' 可保證空白不會成 undefined
+    const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+    // 清空原本的表格
+    preTbody.innerHTML  = '';
+    postTbody.innerHTML = '';
+
+    // 從 index=2 開始才是資料列（跳過前兩列標題）
+    rows.slice(2).forEach(r => {
+      // A–G (0–6)  是「分割前」欄位
+      const preLand   = r[0], preArea   = r[1], preOwner   = r[2];
+      const preNum    = r[3], preDen    = r[4], preValue   = r[5];
+      // I–O (8–14) 是「分割後」欄位
+      const postLand  = r[8], postArea  = r[9], postOwner  = r[10];
+      const postNum   = r[11], postDen   = r[12], postValue  = r[13];
+
+      // 判斷要放哪張表：如果 A 欄或 B 欄有數值，就當 pre；如果 I 欄或 J 欄有數值，就當 post
+      if ((preLand || preArea) && !isNaN(parseFloat(preArea))) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><input class="land-id"    type="text"   value="${preLand}"  /></td>
+          <td><input class="area"       type="number" value="${preArea}" /></td>
+          <td><input class="owner"      type="text"   value="${preOwner}" /></td>
+          <td><input class="numerator"  type="number" value="${preNum}"   /></td>
+          <td><input class="denominator"type="number" value="${preDen}"   /></td>
+          <td><input class="value"      type="number" value="${preValue}" /></td>
+          <td class="subtotal">—</td>
+          <td><button class="btn btn-del">刪除</button></td>`;
+        preTbody.appendChild(tr);
+      }
+
+      if ((postLand || postArea) && !isNaN(parseFloat(postArea))) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><input class="land-id"    type="text"   value="${postLand}"  /></td>
+          <td><input class="area"       type="number" value="${postArea}" /></td>
+          <td><input class="owner"      type="text"   value="${postOwner}" /></td>
+          <td><input class="numerator"  type="number" value="${postNum}"   /></td>
+          <td><input class="denominator"type="number" value="${postDen}"   /></td>
+          <td><input class="value"      type="number" value="${postValue}" /></td>
+          <td class="subtotal">—</td>
+          <td><button class="btn btn-del">刪除</button></td>`;
+        postTbody.appendChild(tr);
+      }
+    });
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// 綁定 input[type=file]
+document.getElementById('importExcel')
+        .addEventListener('change', handleFile, false);
+
+
+
+
+    function tallyByOwner(tbody) {
+      const map = {};
       tbody.querySelectorAll('tr').forEach(row => {
-        const a = parseFloat(row.querySelector('.area').value);
-        const n = parseFloat(row.querySelector('.numerator').value);
-        const d = parseFloat(row.querySelector('.denominator').value);
-        const v = parseFloat(row.querySelector('.value').value);
-        let sub = '—';
+        const a     = parseFloat(row.querySelector('.area').value);
+        const n     = parseFloat(row.querySelector('.numerator').value);
+        const d     = parseFloat(row.querySelector('.denominator').value);
+        const v     = parseFloat(row.querySelector('.value').value);
+        const owner = row.querySelector('.owner').value.trim() || '未填';
+
         if (!isNaN(a) && !isNaN(n) && d > 0 && !isNaN(v)) {
-          const val = a * n / d * v;
-          sum += val;
-          sub = val.toFixed(2);
+          const sub = a * n / d * v;
+          map[owner] = (map[owner] || 0) + sub;
+          row.querySelector('.subtotal').textContent = sub.toFixed(2);
+        } else {
+          row.querySelector('.subtotal').textContent = '—';
         }
-        row.querySelector('.subtotal').textContent = sub;
       });
-      return sum;
+      return map;
     }
 
     calcTaxBtn.addEventListener('click', () => {
-      const preSum  = calculateTable(preTbody);
-      const postSum = calculateTable(postTbody);
+      const allVals = [
+        ...preTbody.querySelectorAll('.value'),
+        ...postTbody.querySelectorAll('.value')
+      ].map(inp => parseFloat(inp.value))
+       .filter(v => !isNaN(v));
+      const minVal = allVals.length ? Math.min(...allVals) : 0;
 
-      preTotalEl.textContent   = '分割前總計：' + preSum.toFixed(2);
-      postTotalEl.textContent  = '分割後總計：' + postSum.toFixed(2);
 
-      const tax = postSum - preSum;
-      taxDueEl.textContent = '應繳地稅：' +
-        (tax > 0 
-          ? tax.toFixed(2) 
-          : '0（免繳）'
-        );
+      const preMap  = tallyByOwner(preTbody);
+      const postMap = tallyByOwner(postTbody);
+
+
+      const owners = new Set([...Object.keys(preMap), ...Object.keys(postMap)]);
+      resultTbody.innerHTML = '';
+
+      owners.forEach(owner => {
+        const preSum  = preMap[owner]  || 0;
+        const postSum = postMap[owner] || 0;
+        const diff    = postSum - preSum;
+        const check   = minVal - diff;
+        const flag    = check > 1 ? '否' : '是';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${owner}</td>
+          <td>${preSum.toFixed(2)}</td>
+          <td>${postSum.toFixed(2)}</td>
+          <td>${diff.toFixed(2)}</td>
+          <td>${flag}</td>
+        `;
+        resultTbody.appendChild(tr);
+      });
     });
+
+    document.getElementById('exportExcel').addEventListener('click', () => {
+  // 先觸發計算，確保 resultTable 已填入最新資料
+  calcTaxBtn.click();
+
+  // 讀取結果 table
+  const table = document.getElementById('resultTable');
+  const ws    = XLSX.utils.table_to_sheet(table);
+  const wb    = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, '計算結果');
+
+  // 產生檔案並下載
+  XLSX.writeFile(wb, '土地分割計算結果.xlsx');
+});
+
+
   </script>
 </body>
 </html>
