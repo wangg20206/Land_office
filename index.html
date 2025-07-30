@@ -1,222 +1,266 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
+
 <head>
-  <meta charset="UTF-8" />
-  <title>分割前後土地地稅計算</title>
-  <!-- SheetJS 用來讀寫 Excel -->
-  <link rel="icon" type="image/x-icon" href="大溪地政.ico">
-  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 24px; background: #f5f5f5; }
-    h1 { text-align: center; }
-    h2 { margin-top: 32px; color: #333; }
-    h3 { margin-top: 32px; color: #e20505; }
-    table { width: 100%; border-collapse: collapse; margin-bottom: 16px; background: #fff; }
-    th, td { border: 1px solid #ccc; padding: 6px 8px; text-align: center; }
-    th { background: #e0e0e0; }
-    input[type="number"], input[type="text"] { width: 90%; padding: 4px; box-sizing: border-box; }
-    .btn { padding: 6px 12px; margin: 4px; border: none; color: #fff; cursor: pointer; border-radius: 4px; }
-    .btn-add  { background: #4caf50; }
-    .btn-calc { background: #2196f3; }
-    .btn-del  { background: #f44336; }
-    #calcTaxBtn { background: #ff9800; }
-  </style>
-</head>
-<body>
-  <h1>共有物分割前後差額計算</h1>
-  <h3>請確認輸入資料與共有物分割協議書相符</h3>
-  <h3>本表計算結果僅供參考</h3>
-  <h3>如要使用匯入檔案，請使用本網頁提供之計算格式(excel)</h3>
-
-  <!-- 範例檔下載 & 匯入 -->
-  <a href="./分割前後土地分割範例.xlsx" download="分割前後土地分割範例.xlsx" class="btn btn-add">
-    📥 下載 Excel 範例
-  </a>
-  <input type="file" id="importExcel" accept=".xlsx,.xls" />
-
-  <h2>分割前</h2>
-  <table id="preTable">
-    <thead>
-      <tr><th>地段</th><th>地號</th><th>面積</th><th>所有權人</th><th>分子</th><th>分母</th><th>現值</th><th>小計</th><th>操作</th></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><input class="section" type="text" /></td>
-        <td><input class="land-id" type="text" /></td>
-        <td><input class="area" type="number" min="0" /></td>
-        <td><input class="owner" type="text" /></td>
-        <td><input class="numerator" type="number" min="1" /></td>
-        <td><input class="denominator" type="number" min="1" /></td>
-        <td><input class="value" type="number" min="0" /></td>
-        <td class="subtotal">—</td>
-        <td><button class="btn btn-del">刪除</button></td>
-      </tr>
-    </tbody>
-  </table>
-  <button id="addPreBtn" class="btn btn-add">＋ 新增（分割前）</button>
-
-  <h2>分割後</h2>
-  <table id="postTable">
-    <thead>
-      <tr><th>地段</th><th>地號</th><th>面積</th><th>所有權人</th><th>分子</th><th>分母</th><th>現值</th><th>小計</th><th>操作</th></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><input class="section" type="text" /></td>
-        <td><input class="land-id" type="text" /></td>
-        <td><input class="area" type="number" min="0" /></td>
-        <td><input class="owner" type="text" /></td>
-        <td><input class="numerator" type="number" min="1" /></td>
-        <td><input class="denominator" type="number" min="1" /></td>
-        <td><input class="value" type="number" min="0" /></td>
-        <td class="subtotal">—</td>
-        <td><button class="btn btn-del">刪除</button></td>
-      </tr>
-    </tbody>
-  </table>
-  <button id="addPostBtn" class="btn btn-add">＋ 新增（分割後）</button><br><br>
-
-  <button id="calcTaxBtn" class="btn btn-calc">計算</button>
-  <button id="exportExcel" class="btn btn-calc">匯出結果 Excel</button>
-
-  <table id="resultTable">
-    <thead>
-      <tr><th>所有權人</th><th>分割前總計</th><th>分割後總計</th><th>差額</th><th>是否超過最小現值</th></tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
-  <script>
-    const preTbody = document.querySelector('#preTable tbody');
-    const postTbody = document.querySelector('#postTable tbody');
-    const addPreBtn = document.getElementById('addPreBtn');
-    const addPostBtn = document.getElementById('addPostBtn');
-    const calcTaxBtn = document.getElementById('calcTaxBtn');
-    const resultTbody = document.querySelector('#resultTable tbody');
-
-    function createRowHTML() {
-      return `
-      <tr>
-        <td><input class="section" type="text" /></td>
-        <td><input class="land-id" type="text" /></td>
-        <td><input class="area" type="number" min="0" /></td>
-        <td><input class="owner" type="text" /></td>
-        <td><input class="numerator" type="number" min="1" /></td>
-        <td><input class="denominator" type="number" min="1" /></td>
-        <td><input class="value" type="number" min="0" /></td>
-        <td class="subtotal">—</td>
-        <td><button class="btn btn-del">刪除</button></td>
-      </tr>`;
-    }
-
-    addPreBtn.addEventListener('click', () => preTbody.insertAdjacentHTML('beforeend', createRowHTML()));
-    addPostBtn.addEventListener('click', () => postTbody.insertAdjacentHTML('beforeend', createRowHTML()));
-    [preTbody, postTbody].forEach(tbody => {
-      tbody.addEventListener('click', e => {
-        if (e.target.matches('.btn-del')) e.target.closest('tr').remove();
-      });
-    });
-
-    // 匯入 Excel
-    document.getElementById('importExcel').addEventListener('change', handleFile);
-    function handleFile(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        const data = new Uint8Array(evt.target.result);
-        const wb = XLSX.read(data, { type: 'array' });
-        const ws = wb.Sheets[wb.SheetNames[0]];
-        const rows = XLSX.utils.sheet_to_json(ws, { header:1, defval: '' });
-        preTbody.innerHTML = '';
-        postTbody.innerHTML = '';
-        rows.slice(2).forEach(r => {
-          const preSection = r[0], preLand = r[1], preArea = r[2], preOwner = r[3], preNum = r[4], preDen = r[5], preValue = r[6];
-          const postSection = r[8], postLand = r[9], postArea = r[10], postOwner = r[11], postNum = r[12], postDen = r[13], postValue = r[14];
-          if ((preSection || preLand || preArea) && !isNaN(preArea)) {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td><input class="section" type="text" value="${preSection}" /></td>
-              <td><input class="land-id" type="text" value="${preLand}" /></td>
-              <td><input class="area" type="number" value="${preArea}" /></td>
-              <td><input class="owner" type="text" value="${preOwner}" /></td>
-              <td><input class="numerator" type="number" value="${preNum}" /></td>
-              <td><input class="denominator" type="number" value="${preDen}" /></td>
-              <td><input class="value" type="number" value="${preValue}" /></td>
-              <td class="subtotal">—</td>
-              <td><button class="btn btn-del">刪除</button></td>`;
-            preTbody.appendChild(tr);
-          }
-          if ((postSection || postLand || postArea) && !isNaN(postArea)) {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td><input class="section" type="text" value="${postSection}" /></td>
-              <td><input class="land-id" type="text" value="${postLand}" /></td>
-              <td><input class="area" type="number" value="${postArea}" /></td>
-              <td><input class="owner" type="text" value="${postOwner}" /></td>
-              <td><input class="numerator" type="number" value="${postNum}" /></td>
-              <td><input class="denominator" type="number" value="${postDen}" /></td>
-              <td><input class="value" type="number" value="${postValue}" /></td>
-              <td class="subtotal">—</td>
-              <td><button class="btn btn-del">刪除</button></td>`;
-            postTbody.appendChild(tr);
-          }
-        });
-      };
-      reader.readAsArrayBuffer(file);
-    }
-
-    // 計算小計並統計
-    function tallyByOwner(tbody) {
-      const map = {};
-      tbody.querySelectorAll('tr').forEach(row => {
-        const a = parseFloat(row.querySelector('.area').value);
-        const n = parseFloat(row.querySelector('.numerator').value);
-        const d = parseFloat(row.querySelector('.denominator').value);
-        const v = parseFloat(row.querySelector('.value').value);
-        const owner = row.querySelector('.owner').value.trim() || '未填';
-        if (!isNaN(a) && !isNaN(n) && d > 0 && !isNaN(v)) {
-          const sub = a * n / d * v;
-          map[owner] = (map[owner] || 0) + sub;
-          row.querySelector('.subtotal').textContent = sub.toFixed(2);
-        } else {
-          row.querySelector('.subtotal').textContent = '—';
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="大溪地政.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地政小程式</title>
+    <style>
+        body {
+            font-family: "Microsoft JhengHei", sans-serif;
+            margin: 0;
+            background-color: #f5f5f5;
+            color: #333;
         }
-      });
-      return map;
-    }
 
-    calcTaxBtn.addEventListener('click', () => {
-      const preMap = tallyByOwner(preTbody);
-      const postMap = tallyByOwner(postTbody);
-      const allVals = [...preTbody.querySelectorAll('.value'), ...postTbody.querySelectorAll('.value')]
-        .map(inp => parseFloat(inp.value)).filter(v => !isNaN(v));
-      const minVal = allVals.length ? Math.min(...allVals) : 0;
-      resultTbody.innerHTML = '';
-      new Set([...Object.keys(preMap), ...Object.keys(postMap)]).forEach(owner => {
-        const preSum = preMap[owner] || 0;
-        const postSum = postMap[owner] || 0;
-        const diff = postSum - preSum;
-        const flag = diff > minVal ? '是' : '否';
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${owner}</td>
-          <td>${preSum.toFixed(2)}</td>
-          <td>${postSum.toFixed(2)}</td>
-          <td>${diff.toFixed(2)}</td>
-          <td>${flag}</td>`;
-        resultTbody.appendChild(tr);
-      });
-    });
+        /* logo 置左，放大 */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            padding: 16px 32px;
+            background-color: white;
+            border-bottom: 1px solid #ccc;
+        }
 
-    // 匯出 Excel
-    document.getElementById('exportExcel').addEventListener('click', () => {
-      calcTaxBtn.click();
-      const ws = XLSX.utils.table_to_sheet(document.getElementById('resultTable'));
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, '計算結果');
-      XLSX.writeFile(wb, '土地分割計算結果.xlsx');
-    });
-  </script>
+        .logo-container img {
+            height: 80px;
+            max-width: 100%;
+        }
+
+        /* header 預留位置（放 header.html） */
+        .header {
+            background-color: white;
+            box-shadow: none;
+        }
+
+        /* 下方導覽列 */
+        .nav-bar {
+            background-color: #ffcc66;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 12px 0;
+            box-shadow: inset 0 -1px #d2a743;
+        }
+
+        .nav-bar a {
+            margin: 0 16px;
+            text-decoration: none;
+            color: #222;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .nav-bar a:hover {
+            color: #c00;
+        }
+
+        .main-content {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 24px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 16px;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 16px;
+            font-size: 14px;
+            color: #888;
+        }
+
+        /* 幻燈片容器 */
+        .slideshow-container {
+            position: relative;
+            max-width: 100%;
+            height: 500px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f5f5f5;
+        }
+
+        /* 單張幻燈片 */
+        .slide {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 幻燈片圖片 */
+        .slide img {
+            aspect-ratio: 32 / 9;
+            /* 適合寬橫圖（你原本就是 32:9） */
+            max-width: 65%;
+            /* 可依需求改成 100% 滿版 */
+            margin: 0 auto;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center center;
+            display: block;
+        }
+
+        /* 淡入動畫 */
+        .fade {
+            animation: fadeEffect 1.5s;
+        }
+
+        @keyframes fadeEffect {
+            from {
+                opacity: 0.4;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* 左右箭頭按鈕 */
+        .prev,
+        .next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 30px;
+            padding: 10px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            cursor: pointer;
+            z-index: 10;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        .prev {
+            left: 10px;
+        }
+
+        .next {
+            right: 10px;
+        }
+
+        .prev:hover,
+        .next:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        /* 響應式設計（手機高度調整） */
+        @media (max-width: 768px) {
+            .slideshow-container {
+                height: 300px;
+            }
+
+            .slide img {
+                max-width: 100%;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+
+
+    <!-- Header（使用你自己的 header.html） -->
+    <div id="header-container" class="header"></div>
+    <div id="header-container"></div>
+
+    <div class="slideshow-container">
+        <div class="slide fade">
+            <img src="bnr.jpg   "
+                alt="沖繩">
+        </div>
+        <div class="slide fade">
+            <img src="https://travel.tycg.gov.tw/content/images/attractions/34278/1024x768_attractions-image-gxgu1k6ihu-97flxnoiaya.jpg"
+                alt="四國/中國">
+        </div>
+
+        <div class="slide fade">
+            <img src="https://cdn.esence.travel/2024/01/%E6%9C%AC%E8%B3%AA%E6%97%85%E8%A1%8C-%E6%95%85%E4%BA%8B%E6%96%87%E7%AB%A0%E9%A6%96%E5%9C%96-1200737-1.jpg"
+                alt="九州">
+        </div>
+        <a class="prev" onclick="plusSlides(-1)">❮</a>
+        <a class="next" onclick="plusSlides(1)">❯</a>
+    </div>
+    <!-- 主內容區 -->
+    <main class="main-content">
+        <h2>地政小程式</h2>
+        <p>歡迎使用地政小程式，請透過上方導覽列選擇功能。</p>
+    </main>
+
+
+    <!-- 載入 header/footer -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch("header.html")
+                .then(response => response.text())
+                .then(data => document.getElementById("header-container").innerHTML = data)
+                .catch(error => console.error("載入 header 失敗:", error));
+
+            fetch("footer.html")
+                .then(response => response.text())
+                .then(data => document.getElementById("footer-container").innerHTML = data)
+                .catch(error => console.error("載入 footer 失敗:", error));
+        });
+    </script>
+    <!-- 幻燈片 JavaScript -->
+    <script>
+        let slideIndex = 0;
+        let slides;
+        let slideInterval;
+
+        function showSlides() {
+            slides = document.querySelectorAll(".slide");
+            if (slides.length === 0) {
+                console.log("找不到幻燈片，請檢查 HTML 結構！");
+                return;
+            }
+            slides.forEach(slide => slide.style.display = "none");
+            if (slideIndex >= slides.length) slideIndex = 0;
+            if (slideIndex < 0) slideIndex = slides.length - 1;
+            slides[slideIndex].style.display = "block";
+        }
+
+        function startSlideShow() {
+            slideInterval = setInterval(() => {
+                slideIndex++;
+                showSlides();
+            }, 5000);
+        }
+
+        function plusSlides(n) {
+            clearInterval(slideInterval);
+            slideIndex += n;
+            showSlides();
+            startSlideShow();
+        }
+
+        window.onload = function () {
+            showSlides();
+            startSlideShow();
+        };
+    </script>
+
 </body>
+
 </html>

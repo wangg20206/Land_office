@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/x-icon" href="大溪地政.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>地政小程式</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Microsoft JhengHei", sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+
+    /* ⬆️ Logo + Title 區 */
+    .logo-bar {
+      display: flex;
+      align-items: center;
+      padding: 16px 32px;
+      background-color: #ffffff;
+      border-bottom: 1px solid #ccc;
+      width: 100%;
+    }
+
+    .logo-bar img {
+      height: 6vw;
+      max-height: 80px;
+      width: auto;
+      margin-right: 2vw;
+    }
+
+    .logo-text h1 {
+      font-size: 2vw;
+      color: #4b2c0d;
+      margin-bottom: 4px;
+      white-space: nowrap;
+    }
+
+    .logo-text p {
+      font-size: 1vw;
+      color: #666;
+      white-space: nowrap;
+    }
+
+    /* ⬆️ 導覽列 */
+    .custom-header-menu {
+      width: 100%;
+      background-color: #ffcc66;
+      border-bottom: 1px solid #d2a743;
+      width: 100%;
+    }
+
+    .custom-header-menu ul {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      list-style: none;
+      padding: 12px 0;
+      margin: 0;
+      flex-wrap: wrap;
+    }
+
+    .custom-header-menu ul li {
+      margin: 0 24px;
+    }
+
+    .custom-header-menu ul li a {
+      text-decoration: none;
+      color: #333;
+      font-size: 18px;
+      font-weight: bold;
+      background-color: #ffcc66;
+      padding: 8px 16px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .custom-header-menu ul li a:hover {
+      background-color: #884400;
+      color: #fff;
+
+    }
+
+    @media (max-width: 768px) {
+      .logo-bar {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .logo-bar img {
+        height: 60px;
+        margin: 0 0 8px 0;
+      }
+
+      .logo-text h1 {
+        font-size: 20px;
+      }
+
+      .logo-text p {
+        font-size: 12px;
+      }
+
+      .custom-header-menu ul {
+        flex-direction: column;
+      }
+
+      .custom-header-menu ul li {
+        margin: 6px 0;
+      }
+    }
+
+    /* ⬇️ 主內容 */
+    .main-content {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 24px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #2c3e50;
+      margin-bottom: 16px;
+    }
+
+    p {
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 16px;
+      font-size: 14px;
+      color: #888;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="logo-bar">
+    <img src="大溪地政.png" alt="LOGO">
+    <div class="logo-text">
+    </div>
+  </div>
+  <!-- ⬆️ 導覽列 -->
+  <nav class="custom-header-menu">
+    <ul>
+      <li><a href="index.html">回到首頁</a></li>
+      <li><a href="共有物分割前後差額計算.html">共有物分割前後差額計算</a></li>
+      <li><a href="權利人資料輸入.html">權利人資料輸入</a></li>
+    </ul>
+  </nav>
+
+
+</body>
+
+</html>
