@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8" />
-        <link rel="icon" type="image/x-icon" href="大溪地政.ico">
+    <link rel="icon" type="image/x-icon" href="大溪地政.ico">
     <title>權利人／義務人資料輸入</title>
     <style>
         body {
@@ -176,7 +176,12 @@
                     { x: 12, y: 20, file: '共有物分割格式_x12y20.docx' },
                     { x: 12, y: 30, file: '共有物分割格式_x12y30.docx' },
                     { x: 12, y: 40, file: '共有物分割格式_x12y40.docx' },
-                    { x: 12, y: 50, file: '共有物分割格式_x12y50.docx' }, // 最後一個，預設
+                    { x: 12, y: 50, file: '共有物分割格式_x12y50.docx' },
+                    { x: 18, y: 10, file: '共有物分割格式_x12y50.docx' },
+                    { x: 18, y: 20, file: '共有物分割格式_x12y50.docx' },
+                    { x: 18, y: 30, file: '共有物分割格式_x12y50.docx' },
+                    { x: 18, y: 40, file: '共有物分割格式_x12y50.docx' },
+                    { x: 18, y: 50, file: '共有物分割格式_x12y50.docx' }, // 最後一個，預設
                 ];
 
                 // 預設選最後一個               
@@ -198,7 +203,7 @@
             }
 
 
- 
+
 
             // 2. 解壓並建立 Docxtemplater，加入 nullGetter
             const zip = new PizZip(arrayBuffer);
@@ -362,7 +367,7 @@
 
         document.addEventListener("DOMContentLoaded", function () {
             fetch("header.html")
-                .then(response => response.text())  
+                .then(response => response.text())
                 .then(data => document.getElementById("header-container").innerHTML = data)
                 .catch(error => console.error("載入 header 失敗:", error));
         });
