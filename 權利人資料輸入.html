@@ -6,12 +6,66 @@
     <link rel="icon" type="image/x-icon" href="大溪地政.ico">
     <title>權利人／義務人資料輸入</title>
     <style>
+        /* 讓頁面從最上緣開始，沒有預設外距與內距 */
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            padding: 24px;
             background: #f5f5f5;
         }
 
+        /* 讓頁面沒有外距，header 能貼齊視窗 */
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 主要內容容器：寬 65%，置中 */
+        .page-content {
+            width: 70%;
+            margin: 0 auto;
+            /* 置中 */
+            padding: 24px;
+            /* 你的原本內距放這裡 */
+        }
+
+        /* 表格仍占容器寬度 */
+        table {
+            width: 100%;
+        }
+
+        /* 小螢幕自動放寬，避免太窄 */
+        @media (max-width: 1024px) {
+            .page-content {
+                width: 90%;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .page-content {
+                width: 100%;
+                padding: 16px;
+            }
+        }
+
+
+        /* 原本給 body 的 24px 改到內容容器 */
+        .page-content {
+            padding: 24px;
+        }
+
+        /* 避免 header 與標題之間有多餘空隙 */
+        h1 {
+            margin-top: 12px;
+            /* 或 0，看你的設計 */
+        }
+
+        /* 你的原本樣式保持不變 */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -60,6 +114,8 @@
 <body>
     <!-- Header 容器，會載入 header.html -->
     <div id="header-container"></div>
+
+    <div class="page-content">
     <h1>權利人／義務人資料輸入</h1>
     <button type="button" class="btn btn-del" onclick="showStoredLandDetails()">顯示 localStorage 土地資料</button>
 
