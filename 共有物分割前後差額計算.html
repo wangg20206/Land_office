@@ -402,7 +402,7 @@
         const preSum = preMap[owner] || 0;
         const postSum = postMap[owner] || 0;
         const diff = postSum - preSum;
-        const flag = diff > minVal ? '是' : '否';
+        const flag = Math.abs(diff) > minVal ? '是' : '否';
         const tr = document.createElement('tr');
         tr.innerHTML = `
       <td>${owner}</td>
