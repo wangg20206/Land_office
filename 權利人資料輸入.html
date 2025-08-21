@@ -108,7 +108,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><input type="text" name="role[]" placeholder="權利人 或 義務人" /></td>
+                        <td><input type="text" name="role[]" placeholder="權利人 或 義務人" value="權利人兼義務人" /></td>
                         <td><input type="text" name="name[]" placeholder="姓名／名稱" /></td>
                         <td>
                             <span style="white-space:nowrap;">民國&nbsp;</span>
@@ -145,7 +145,7 @@
                     <td>
                         <span style="white-space:nowrap;">民國&nbsp;</span>
                         <input type="text" name="agent_dob" placeholder="66.1.1" pattern="\d{1,3}\.\d{1,2}\.\d{1,2}"
-                            title="格式：年.月.日，例如 66.1.1" />
+                            title="格式：年.月.日，例如 66.1.1" style="width:70px; box-sizing:border-box;" />
                     </td>
                     <td><input type="text" name="agent_idNo" placeholder="統一編號" /></td>
                     <td><input type="text" name="agent_address" placeholder="住址" /></td>
@@ -170,7 +170,7 @@
         document.getElementById('addRowBtn').addEventListener('click', () => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-        <td><input type="text" name="role[]" placeholder="權利人 或 義務人"/></td>
+        <td><input type="text" name="role[]" placeholder="權利人 或 義務人"  value="權利人兼義務人"/></td>
         <td><input type="text" name="name[]" placeholder="姓名／名稱"/></td>
         <td>
           <span style="white-space:nowrap;">民國&nbsp;</span>
@@ -362,6 +362,35 @@
             })();
 
 
+            // === 5-3-bis) 生成「不受 6/12/18 限制」的 2owner* 清單（可含代理人）===
+            (function fill2OwnerSeries() {
+                const seq = [];
+
+                // 1) 先把表單中的權利人/義務人依序放入
+                roles.forEach((_, i) => {
+                    const name = (names[i] || '').trim();
+                    const dob = (dobs[i] || '').trim();
+                    const idNo = (idNos[i] || '').trim();
+                    const addr = (addresses[i] || '').trim();
+                    const role = (roles[i] || '').trim();
+                    // 只要有任一欄有值就收進清單
+                    if (name || dob || idNo || addr || role) {
+                        seq.push({ role, name, dob, idNo, address: addr });
+                    }
+                });
+
+                // 3) 依序寫入 {2owner1_*}, {2owner2_*}, ...
+                seq.forEach((p, idx) => {
+                    const n = idx + 1;
+                    data[`2owner${n}_role`] = p.role || '';
+                    data[`2owner${n}_name`] = p.name || '';
+                    data[`2owner${n}_dob`] = p.dob || '';
+                    data[`2owner${n}_idNo`] = p.idNo || '';
+                    data[`2owner${n}_address`] = p.address || '';
+                });
+            })();
+
+
 
             // === 讓模板可同時吃「底線版」與「空白版」鍵名 ===
             // 先把讀到的代理人值放入 data（底線版）
@@ -425,5 +454,3 @@
 </body>
 
 </html>
-
-
