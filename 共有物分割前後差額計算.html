@@ -1,93 +1,32 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-
 <head>
   <meta charset="UTF-8" />
   <title>分割前後土地地稅計算</title>
   <link rel="icon" href="大溪地政.ico">
   <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-    }
-
-    .main-wrapper {
-      padding: 24px;
-      max-width: 80%;
-      margin: 0 auto;
-    }
-
-    h1 {
-      text-align: center;
-    }
-
-    h2 {
-      margin-top: 32px;
-      color: #333;
-    }
-
-    h3 {
-      margin-top: 32px;
-      color: #e20505;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 16px;
-      background: #fff;
-    }
-
-    th,
-    td {
-      border: 1px solid #ccc;
-      padding: 6px 8px;
-      text-align: center;
-    }
-
-    th {
-      background: #e0e0e0;
-    }
-
-    input[type="number"],
-    input[type="text"] {
-      width: 90%;
-      padding: 4px;
-      box-sizing: border-box;
-    }
-
-    .btn {
-      padding: 6px 12px;
-      margin: 4px;
-      border: none;
-      color: #fff;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-
-    .btn-add {
-      background: #4caf50;
-    }
-
-    .btn-calc {
-      background: #2196f3;
-    }
-
-    .btn-del {
-      background: #f44336;
-    }
-
-    #calcTaxBtn {
-      background: #ff9800;
-    }
+    body { font-family: Arial, sans-serif; background:#f5f5f5; }
+    .main-wrapper { padding:24px; max-width:80%; margin:0 auto; }
+    h1 { text-align:center; }
+    h2 { margin-top:32px; color:#333; }
+    h3 { margin-top:32px; color:#e20505; }
+    table { width:100%; border-collapse:collapse; margin-bottom:16px; background:#fff; }
+    th,td { border:1px solid #ccc; padding:6px 8px; text-align:center; }
+    th { background:#e0e0e0; }
+    input[type="number"], input[type="text"] { width:90%; padding:4px; box-sizing:border-box; }
+    .btn { padding:6px 12px; margin:4px; border:none; color:#fff; cursor:pointer; border-radius:4px; }
+    .btn-add { background:#4caf50; }
+    .btn-calc { background:#2196f3; }
+    .btn-del { background:#f44336; }
+    #calcTaxBtn { background:#ff9800; }
   </style>
 </head>
 
 <body>
   <div id="header-container"></div>
-  <div class="main-wrapper">
 
+  <div class="main-wrapper">
     <h1>共有物分割前後差額計算</h1>
     <h3>請確認輸入資料與共有物分割協議書相符</h3>
     <h3>本表計算結果僅供參考</h3>
@@ -101,17 +40,8 @@
     <table id="preTable">
       <thead>
         <tr>
-          <th>鄉鎮市區</th>
-          <th>段</th>
-          <th>小段</th>
-          <th>地號</th>
-          <th>面積</th>
-          <th>所有權人</th>
-          <th>分子</th>
-          <th>分母</th>
-          <th>現值</th>
-          <th>小計</th>
-          <th>操作</th>
+          <th>鄉鎮市區</th><th>段</th><th>小段</th><th>地號</th><th>面積</th>
+          <th>所有權人</th><th>分子</th><th>分母</th><th>現值</th><th>小計</th><th>操作</th>
         </tr>
       </thead>
       <tbody>
@@ -137,17 +67,8 @@
     <table id="postTable">
       <thead>
         <tr>
-          <th>鄉鎮市區</th>
-          <th>段</th>
-          <th>小段</th>
-          <th>地號</th>
-          <th>面積</th>
-          <th>所有權人</th>
-          <th>分子</th>
-          <th>分母</th>
-          <th>現值</th>
-          <th>小計</th>
-          <th>操作</th>
+          <th>鄉鎮市區</th><th>段</th><th>小段</th><th>地號</th><th>面積</th>
+          <th>所有權人</th><th>分子</th><th>分母</th><th>現值</th><th>小計</th><th>操作</th>
         </tr>
       </thead>
       <tbody>
@@ -170,19 +91,15 @@
 
     <button id="calcTaxBtn" class="btn btn-calc">計算</button>
     <button id="exportExcel" class="btn btn-calc">匯出結果 Excel</button>
-    <button class="btn btn-calc" onclick="showStoredData()">顯示已儲存資料</button>
-    <button class="btn btn-add" onclick="location.href='權利人資料輸入.html'">➡️ 前往繪製土地登記申請書(只可產生18人以下或90筆以下資料)
+    <!-- <button class="btn btn-calc" id="showStoredBtn">顯示已儲存資料</button> -->
+    <button class="btn btn-add" onclick="location.href='權利人資料輸入.html'">
+      ➡️ 前往產製土地登記申請書(只可產生18人以下或90筆以下資料)
     </button>
-
 
     <table id="resultTable">
       <thead>
         <tr>
-          <th>所有權人</th>
-          <th>分割前總計</th>
-          <th>分割後總計</th>
-          <th>差額</th>
-          <th>是否超過最小現值</th>
+          <th>所有權人</th><th>分割前總計</th><th>分割後總計</th><th>差額</th><th>是否超過最小現值</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -190,16 +107,25 @@
   </div>
 
   <script>
-    const preTbody = document.querySelector('#preTable tbody');
-    const postTbody = document.querySelector('#postTable tbody');
-    const addPreBtn = document.getElementById('addPreBtn');
+  document.addEventListener('DOMContentLoaded', () => {
+    // 載入 header
+    fetch('header.html')
+      .then(r => r.text())
+      .then(html => document.getElementById('header-container').innerHTML = html)
+      .catch(e => console.error('載入 header 失敗:', e));
+
+    // 快速取 DOM
+    const preTbody   = document.querySelector('#preTable tbody');
+    const postTbody  = document.querySelector('#postTable tbody');
+    const addPreBtn  = document.getElementById('addPreBtn');
     const addPostBtn = document.getElementById('addPostBtn');
-    const calcTaxBtn = document.getElementById('calcTaxBtn');
-    const resultTbody = document.querySelector('#resultTable tbody');
+    const calcBtn    = document.getElementById('calcTaxBtn');
+    const exportBtn  = document.getElementById('exportExcel');
+    const showBtn    = document.getElementById('showStoredBtn');
+    const resultTbody= document.querySelector('#resultTable tbody');
 
-    // 1. 建立新列
-
-    function createRowHTML() {
+    // 建立一列 HTML
+    function createRowHTML(){
       return `
         <tr>
           <td><input class="township"  type="text" /></td>
@@ -216,7 +142,8 @@
         </tr>`;
     }
 
-    addPreBtn.addEventListener('click', () => preTbody.insertAdjacentHTML('beforeend', createRowHTML()));
+    // 新增列
+    addPreBtn.addEventListener('click',  () => preTbody.insertAdjacentHTML('beforeend', createRowHTML()));
     addPostBtn.addEventListener('click', () => postTbody.insertAdjacentHTML('beforeend', createRowHTML()));
 
     // 刪除列
@@ -226,118 +153,91 @@
       });
     });
 
-    // 2. 匯入 Excel（假設前 9 欄是「分割前」，後 9 欄是「分割後」）
+    // 匯入 Excel
     document.getElementById('importExcel').addEventListener('change', handleFile);
-
-    function handleFile(e) {
+    function handleFile(e){
       const file = e.target.files[0];
-      if (!file) return;
+      if(!file) return;
       const reader = new FileReader();
       reader.onload = evt => {
-        const data = new Uint8Array(evt.target.result);
-        const wb = XLSX.read(data, { type: 'array' });
+        const wb = XLSX.read(new Uint8Array(evt.target.result), { type:'array' });
         const ws = wb.Sheets[wb.SheetNames[0]];
-        const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+        const rows = XLSX.utils.sheet_to_json(ws, { header:1, defval:'' });
 
         preTbody.innerHTML = '';
         postTbody.innerHTML = '';
 
-        // ===== 前面記憶變數 =====
-        let prevPreTownship = '';
-        let prevPrePart = '';
-        let prevPreSmall = '';
-        // ===== 後面記憶變數 =====
-        let prevPostTownship = '';
-        let prevPostPart = '';
-        let prevPostSmall = '';
+        let prevPreTownship='', prevPrePart='', prevPreSmall='';
+        let prevPostTownship='', prevPostPart='', prevPostSmall='';
 
         rows.slice(2).forEach(r => {
-          // --- 分割前：決定三個欄位要顯示的值 ---
-          const curPreTownship = r[0] !== '' ? r[0] : prevPreTownship;
+          // 分割前
+          const curPreTown = r[0] !== '' ? r[0] : prevPreTownship;
           const curPrePart = r[1] !== '' ? r[1] : prevPrePart;
-          const curPreSmall = r[2] !== '' ? r[2] : prevPreSmall;
-          // 更新記憶
-          prevPreTownship = curPreTownship;
-          prevPrePart = curPrePart;
-          prevPreSmall = curPreSmall;
+          const curPreSmall= r[2] !== '' ? r[2] : prevPreSmall;
+          prevPreTownship = curPreTown; prevPrePart = curPrePart; prevPreSmall = curPreSmall;
 
-          if (!isNaN(r[4]) && r[4] !== '') {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-          <td><input class="township"  type="text" value="${curPreTownship}" /></td>
-          <td><input class="part"      type="text" value="${curPrePart}"     /></td>
-          <td><input class="small"     type="text" value="${curPreSmall}"    /></td>
-          <td><input class="land-id"   type="text" value="${r[3] || ''}"   /></td>
-          <td><input class="area"      type="number" value="${r[4] || ''}"   /></td>
-          <td><input class="owner"     type="text"  value="${r[5] || ''}"   /></td>
-          <td><input class="numerator" type="number" value="${r[6] || ''}"   /></td>
-          <td><input class="denominator" type="number" value="${r[7] || ''}"   /></td>
-          <td><input class="value"     type="number" value="${r[8] || ''}"   /></td>
-          <td class="subtotal">—</td>
-          <td><button class="btn btn-del">刪除</button></td>`;
-            preTbody.appendChild(tr);
+          if(!isNaN(r[4]) && r[4] !== ''){
+            preTbody.insertAdjacentHTML('beforeend', `
+              <tr>
+                <td><input class="township"  type="text" value="${curPreTown}" /></td>
+                <td><input class="part"      type="text" value="${curPrePart}" /></td>
+                <td><input class="small"     type="text" value="${curPreSmall}" /></td>
+                <td><input class="land-id"   type="text" value="${r[3] || ''}" /></td>
+                <td><input class="area"      type="number" value="${r[4] || ''}" /></td>
+                <td><input class="owner"     type="text" value="${r[5] || ''}" /></td>
+                <td><input class="numerator" type="number" value="${r[6] || ''}" /></td>
+                <td><input class="denominator" type="number" value="${r[7] || ''}" /></td>
+                <td><input class="value"     type="number" value="${r[8] || ''}" /></td>
+                <td class="subtotal">—</td>
+                <td><button class="btn btn-del">刪除</button></td>
+              </tr>`);
           }
 
-          // --- 分割後：決定三個欄位要顯示的值 ---
-          const curPostTownship = r[10] !== '' ? r[10] : prevPostTownship;
+          // 分割後
+          const curPostTown = r[10] !== '' ? r[10] : prevPostTownship;
           const curPostPart = r[11] !== '' ? r[11] : prevPostPart;
-          const curPostSmall = r[12] !== '' ? r[12] : prevPostSmall;
-          // 更新記憶
-          prevPostTownship = curPostTownship;
-          prevPostPart = curPostPart;
-          prevPostSmall = curPostSmall;
+          const curPostSmall= r[12] !== '' ? r[12] : prevPostSmall;
+          prevPostTownship = curPostTown; prevPostPart = curPostPart; prevPostSmall = curPostSmall;
 
-          // r[14] 是面積，用它來判斷是否插入這列
-          if (!isNaN(r[14]) && r[14] !== '') {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-      <td><input class="township"  type="text" value="${curPostTownship}" /></td>
-      <td><input class="part"      type="text" value="${curPostPart}"      /></td>
-      <td><input class="small"     type="text" value="${curPostSmall}"     /></td>
-      <td><input class="land-id"   type="text" value="${r[13] || ''}"     /></td>
-      <td><input class="area"      type="number" value="${r[14] || ''}"     /></td>
-      <td><input class="owner"     type="text"  value="${r[15] || ''}"     /></td>
-      <td><input class="numerator" type="number" value="${r[16] || ''}"    /></td>
-      <td><input class="denominator" type="number" value="${r[17] || ''}"    /></td>
-      <td><input class="value"     type="number" value="${r[18] || ''}"     /></td>
-      <td class="subtotal">—</td>
-      <td><button class="btn btn-del">刪除</button></td>`;
-            postTbody.appendChild(tr);
+          if(!isNaN(r[14]) && r[14] !== ''){
+            postTbody.insertAdjacentHTML('beforeend', `
+              <tr>
+                <td><input class="township"  type="text" value="${curPostTown}" /></td>
+                <td><input class="part"      type="text" value="${curPostPart}" /></td>
+                <td><input class="small"     type="text" value="${curPostSmall}" /></td>
+                <td><input class="land-id"   type="text" value="${r[13] || ''}" /></td>
+                <td><input class="area"      type="number" value="${r[14] || ''}" /></td>
+                <td><input class="owner"     type="text" value="${r[15] || ''}" /></td>
+                <td><input class="numerator" type="number" value="${r[16] || ''}" /></td>
+                <td><input class="denominator" type="number" value="${r[17] || ''}" /></td>
+                <td><input class="value"     type="number" value="${r[18] || ''}" /></td>
+                <td class="subtotal">—</td>
+                <td><button class="btn btn-del">刪除</button></td>
+              </tr>`);
           }
         });
       };
       reader.readAsArrayBuffer(file);
     }
 
-    function getLandDetailsAsShortCodes() {
-      const extract = tbody => {
-        const rows = [];
-        tbody.querySelectorAll('tr').forEach(row => {
-          const a = row.querySelector('.township')?.value || '';
-          const b = row.querySelector('.part')?.value || '';
-          const c = row.querySelector('.small')?.value || '';
-          const d = row.querySelector('.land-id')?.value || '';
-          const e = parseFloat(row.querySelector('.area')?.value) || 0;
-          const f = row.querySelector('.owner')?.value || '';
-          const g = parseInt(row.querySelector('.numerator')?.value) || 1;
-          const h = parseInt(row.querySelector('.denominator')?.value) || 1;
-          const i = row.querySelector('.subtotal')?.textContent || '';
-          rows.push({ a, b, c, d, e, f, g, h, i });
-        });
-        return rows;
-      };
-
-      const landDetails = {
-        pre: extract(preTbody),
-        post: extract(postTbody)
-      };
-
-      localStorage.setItem('landDetails', JSON.stringify(landDetails));
+    // 自動補值（把空白欄位補前一列的值）
+    function fillForward(tbody){
+      let lastTown='', lastPart='', lastSmall='', lastId='';
+      tbody.querySelectorAll('tr').forEach(row => {
+        const town = row.querySelector('.township');
+        const part = row.querySelector('.part');
+        const small= row.querySelector('.small');
+        const lid  = row.querySelector('.land-id');
+        if(town.value.trim()  !== '') lastTown  = town.value.trim();  else town.value  = lastTown;
+        if(part.value.trim()  !== '') lastPart  = part.value.trim();  else part.value  = lastPart;
+        if(small.value.trim() !== '') lastSmall = small.value.trim(); else small.value = lastSmall;
+        if(lid.value.trim()   !== '') lastId    = lid.value.trim();   else lid.value   = lastId;
+      });
     }
 
-    // 3. 計算小計並匯總
-
-    function tallyByOwner(tbody) {
+    // 計算小計＆彙總
+    function tallyByOwner(tbody){
       const map = {};
       tbody.querySelectorAll('tr').forEach(row => {
         const a = parseFloat(row.querySelector('.area').value);
@@ -356,99 +256,9 @@
       return map;
     }
 
-    calcTaxBtn.addEventListener('click', () => {
-      // ✅ 自動補值函數：補齊 鄉鎮市區、段、小段、地號
-      function fillForward(tbody) {
-        let lastTownship = '';
-        let lastPart = '';
-        let lastSmall = '';
-        let lastLandId = '';
-
-        tbody.querySelectorAll('tr').forEach(row => {
-          const township = row.querySelector('.township');
-          const part = row.querySelector('.part');
-          const small = row.querySelector('.small');
-          const landId = row.querySelector('.land-id');
-
-          if (township.value.trim() !== '') lastTownship = township.value.trim();
-          else township.value = lastTownship;
-
-          if (part.value.trim() !== '') lastPart = part.value.trim();
-          else part.value = lastPart;
-
-          if (small.value.trim() !== '') lastSmall = small.value.trim();
-          else small.value = lastSmall;
-
-          if (landId.value.trim() !== '') lastLandId = landId.value.trim();
-          else landId.value = lastLandId;
-        });
-      }
-
-      // ✅ 執行自動補值
-      fillForward(preTbody);
-      fillForward(postTbody);
-
-      // ✅ 計算小計並產出報表
-      const preMap = tallyByOwner(preTbody);
-      const postMap = tallyByOwner(postTbody);
-      getLandDetailsAsShortCodes();
-
-      const allVals = [...preTbody.querySelectorAll('.value'), ...postTbody.querySelectorAll('.value')]
-        .map(i => parseFloat(i.value)).filter(v => !isNaN(v));
-      const minVal = allVals.length ? Math.min(...allVals) : 0;
-
-      resultTbody.innerHTML = '';
-      new Set([...Object.keys(preMap), ...Object.keys(postMap)]).forEach(owner => {
-        const preSum = preMap[owner] || 0;
-        const postSum = postMap[owner] || 0;
-        const diff = postSum - preSum;
-        const flag = Math.abs(diff) > minVal ? '是' : '否';
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-      <td>${owner}</td>
-      <td>${preSum.toFixed(2)}</td>
-      <td>${postSum.toFixed(2)}</td>
-      <td>${diff.toFixed(2)}</td>
-      <td>${flag}</td>`;
-        resultTbody.appendChild(tr);
-      });
-
-      console.log('✅ 已儲存 landDetails 至 localStorage！');
-    });
-
-
-
-
-    // 4. 匯出 Excel
-    document.getElementById('exportExcel').addEventListener('click', () => {
-      calcTaxBtn.click();
-      const ws = XLSX.utils.table_to_sheet(document.getElementById('resultTable'));
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, '計算結果');
-      XLSX.writeFile(wb, '土地分割計算結果.xlsx');
-      getLandDetailsAsShortCodes();
-    });
-
-
-
-
-    // 載入 header.html
-    document.addEventListener("DOMContentLoaded", () => {
-
-      // 每次重新整理自動清除儲存資料
-      localStorage.removeItem('landDetails');
-
-      fetch("header.html")
-        .then(r => r.text())
-        .then(html => document.getElementById("header-container").innerHTML = html)
-        .catch(e => console.error("載入 header 失敗:", e));
-    });
-
-
-
-
-    function getLandDetailsAsShortCodes() {
-      const extract = tbody => {
+    // 儲存：包含現值 v 與小計 i
+    function saveLandDetails(){
+      const extract = (tbody) => {
         const rows = [];
         tbody.querySelectorAll('tr').forEach(row => {
           const a = row.querySelector('.township')?.value || '';
@@ -459,39 +269,113 @@
           const f = row.querySelector('.owner')?.value || '';
           const g = parseInt(row.querySelector('.numerator')?.value) || 1;
           const h = parseInt(row.querySelector('.denominator')?.value) || 1;
-          const i = row.querySelector('.subtotal')?.textContent || '';
-          rows.push({ a, b, c, d, e, f, g, h, i });
+          const v = parseFloat(row.querySelector('.value')?.value);
+          const iText = row.querySelector('.subtotal')?.textContent || '';
+          const i = Number.isFinite(parseFloat(iText)) ? parseFloat(iText) : 0;
+          rows.push({ a,b,c,d,e,f,g,h, v: Number.isFinite(v) ? v : 0, i });
         });
         return rows;
       };
-
-      const landDetails = {
-        pre: extract(preTbody),
+      localStorage.setItem('landDetails', JSON.stringify({
+        pre:  extract(preTbody),
         post: extract(postTbody)
-      };
-
-      // ✅ 儲存進 localStorage
-      localStorage.setItem('landDetails', JSON.stringify(landDetails));
+      }));
     }
 
+    // 從儲存還原
+    function restoreTablesFromStorage(){
+      const raw = localStorage.getItem('landDetails');
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      const toRowHTML = r => `
+        <tr>
+          <td><input class="township"  type="text" value="${r.a || ''}"/></td>
+          <td><input class="part"      type="text" value="${r.b || ''}"/></td>
+          <td><input class="small"     type="text" value="${r.c || ''}"/></td>
+          <td><input class="land-id"   type="text" value="${r.d || ''}"/></td>
+          <td><input class="area"      type="number" value="${r.e ?? ''}"/></td>
+          <td><input class="owner"     type="text" value="${r.f || ''}"/></td>
+          <td><input class="numerator" type="number" value="${r.g ?? ''}"/></td>
+          <td><input class="denominator" type="number" value="${r.h ?? ''}"/></td>
+          <td><input class="value"     type="number" value="${r.v ?? ''}"/></td>
+          <td class="subtotal">—</td>
+          <td><button class="btn btn-del">刪除</button></td>
+        </tr>`;
+      if (Array.isArray(parsed.pre)  && parsed.pre.length)  preTbody.innerHTML  = parsed.pre.map(toRowHTML).join('');
+      if (Array.isArray(parsed.post) && parsed.post.length) postTbody.innerHTML = parsed.post.map(toRowHTML).join('');
+    }
 
-    function showStoredData() {
+    // 計算按鈕
+    calcBtn.addEventListener('click', () => {
+      fillForward(preTbody);
+      fillForward(postTbody);
+
+      const preMap  = tallyByOwner(preTbody);
+      const postMap = tallyByOwner(postTbody);
+
+      // 取得所有現值的最小值
+      const allVals = [...preTbody.querySelectorAll('.value'), ...postTbody.querySelectorAll('.value')]
+        .map(i => parseFloat(i.value)).filter(v => !isNaN(v));
+      const minVal = allVals.length ? Math.min(...allVals) : 0;
+
+      // 顯示結果
+      resultTbody.innerHTML = '';
+      const owners = new Set([...Object.keys(preMap), ...Object.keys(postMap)]);
+      owners.forEach(owner => {
+        const preSum  = preMap[owner]  || 0;
+        const postSum = postMap[owner] || 0;
+        const diff    = postSum - preSum;
+        const flag    = Math.abs(diff) > minVal ? '是' : '否';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${owner}</td>
+          <td>${preSum.toFixed(2)}</td>
+          <td>${postSum.toFixed(2)}</td>
+          <td>${diff.toFixed(2)}</td>
+          <td>${flag}</td>`;
+        resultTbody.appendChild(tr);
+      });
+
+      // 存檔（含小計）
+      saveLandDetails();
+      console.log('✅ 已儲存 landDetails 至 localStorage！');
+    });
+
+    // 匯出 Excel
+    exportBtn.addEventListener('click', () => {
+      calcBtn.click(); // 先重新計算＆存檔
+      const ws = XLSX.utils.table_to_sheet(document.getElementById('resultTable'));
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, '計算結果');
+      XLSX.writeFile(wb, '土地分割計算結果.xlsx');
+    });
+
+    // 顯示已儲存資料
+    showBtn.addEventListener('click', () => {
       const data = localStorage.getItem('landDetails');
       if (data) {
         const parsed = JSON.parse(data);
-        console.log("【分割前資料】：", parsed.pre);
-        console.log("【分割後資料】：", parsed.post);
-        alert("已儲存資料，請開啟 F12 → Console 查看詳細內容");
+        console.log('【分割前資料】：', parsed.pre);
+        console.log('【分割後資料】：', parsed.post);
+        alert('已儲存資料，請開啟 F12 → Console 查看詳細內容');
       } else {
-        alert("尚未儲存任何資料！");
+        alert('尚未儲存任何資料！');
       }
-    }
+    });
 
+    // 依 URL 參數 mode 還原/重置
+    (function handleMode(){
+      const mode = new URLSearchParams(location.search).get('mode');
+      if (mode === 'reset') {
+        localStorage.removeItem('landDetails');
+        preTbody.innerHTML  = createRowHTML();
+        postTbody.innerHTML = createRowHTML();
+      } else if (mode === 'edit') {
+        restoreTablesFromStorage();
+      }
+    })();
 
-
-
+  }); // DOMContentLoaded
   </script>
-
 </body>
-
 </html>

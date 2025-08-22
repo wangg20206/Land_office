@@ -92,6 +92,10 @@
     <div class="page-content">
         <h1>權利人／義務人資料輸入</h1>
         <!-- <button type="button" class="btn btn-del" onclick="showStoredLandDetails()">顯示 localStorage 土地資料</button> -->
+        <button class="btn btn-add" id="back-keep">⬅ 回前頁（改寫資料）</button>
+        <button class="btn btn-del" id="back-reset">⬅ 回前頁（資料重寫）</button>
+
+
 
         <!-- 權利人/義務人表單 -->
         <form id="ownerForm">
@@ -449,6 +453,21 @@
                 .then(response => response.text())
                 .then(html => document.getElementById("header-container").innerHTML = html)
                 .catch(error => console.error("載入 header 失敗:", error));
+        });
+    </script>
+    <script>
+        // 依你的實際檔名調整calcPage路徑
+        const calcPage = '共有物分割前後差額計算.html';
+
+        document.getElementById('back-keep').addEventListener('click', () => {
+            // 帶 mode=edit -> 前頁保留資料並還原
+            location.href = `${calcPage}?mode=edit`;
+        });
+
+        document.getElementById('back-reset').addEventListener('click', () => {
+            // 也可以先清掉 landDetails，再帶 mode=reset
+            // localStorage.removeItem('landDetails');
+            location.href = `${calcPage}?mode=reset`;
         });
     </script>
 </body>
