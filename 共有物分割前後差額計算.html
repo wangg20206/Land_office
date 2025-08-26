@@ -91,7 +91,6 @@
 
     <button id="calcTaxBtn" class="btn btn-calc">計算</button>
     <button id="exportExcel" class="btn btn-calc">匯出結果 Excel</button>
-    <!-- <button class="btn btn-calc" id="showStoredBtn">顯示已儲存資料</button> -->
     <button class="btn btn-add" onclick="location.href='權利人資料輸入.html'">
       ➡️ 前往產製土地登記申請書(只可產生18人以下或90筆以下資料)
     </button>
@@ -121,7 +120,6 @@
     const addPostBtn = document.getElementById('addPostBtn');
     const calcBtn    = document.getElementById('calcTaxBtn');
     const exportBtn  = document.getElementById('exportExcel');
-    const showBtn    = document.getElementById('showStoredBtn');
     const resultTbody= document.querySelector('#resultTable tbody');
 
     // 建立一列 HTML
@@ -305,6 +303,18 @@
       if (Array.isArray(parsed.post) && parsed.post.length) postTbody.innerHTML = parsed.post.map(toRowHTML).join('');
     }
 
+    // 依 URL 參數 mode 還原/重置（放前面以免其他錯誤中斷）
+    (function handleMode(){
+      const mode = new URLSearchParams(location.search).get('mode');
+      if (mode === 'reset') {
+        localStorage.removeItem('landDetails');
+        preTbody.innerHTML  = createRowHTML();
+        postTbody.innerHTML = createRowHTML();
+      } else if (mode === 'edit') {
+        restoreTablesFromStorage();
+      }
+    })();
+
     // 計算按鈕
     calcBtn.addEventListener('click', () => {
       fillForward(preTbody);
@@ -349,32 +359,6 @@
       XLSX.utils.book_append_sheet(wb, ws, '計算結果');
       XLSX.writeFile(wb, '土地分割計算結果.xlsx');
     });
-
-    // 顯示已儲存資料
-    showBtn.addEventListener('click', () => {
-      const data = localStorage.getItem('landDetails');
-      if (data) {
-        const parsed = JSON.parse(data);
-        console.log('【分割前資料】：', parsed.pre);
-        console.log('【分割後資料】：', parsed.post);
-        alert('已儲存資料，請開啟 F12 → Console 查看詳細內容');
-      } else {
-        alert('尚未儲存任何資料！');
-      }
-    });
-
-    // 依 URL 參數 mode 還原/重置
-    (function handleMode(){
-      const mode = new URLSearchParams(location.search).get('mode');
-      if (mode === 'reset') {
-        localStorage.removeItem('landDetails');
-        preTbody.innerHTML  = createRowHTML();
-        postTbody.innerHTML = createRowHTML();
-      } else if (mode === 'edit') {
-        restoreTablesFromStorage();
-      }
-    })();
-
   }); // DOMContentLoaded
   </script>
 </body>
